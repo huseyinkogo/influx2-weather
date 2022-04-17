@@ -3,11 +3,10 @@ Delay = 20
 Output = False
 
 [INFLUXDB]
-Address =
-Port = 8086
-Database =
-Username =
-Password =
+URL =
+token = 
+org =
+bucket =
 
 [WEATHER]
 #names of scripts for other weather sources (without file extension)

@@ -1,15 +1,15 @@
 import configparser
 import requests
 import importlib
-#import urllib2
-#from urllib.request import urlopen
+
 from datetime import datetime
 import json
 import time
 import datetime
-from influxdb import InfluxDBClient
-from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
-from requests.exceptions import ConnectionError
+
+from influxdb_client import InfluxDBClient, WritePrecision
+from influxdb_client.client.write_api import ASYNCHRONOUS
+from influxdb_client.client.write.point import Point
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -18,15 +18,16 @@ delay = float(config['GENERAL']['Delay'])
 output = bool(config['GENERAL'].get('Output', fallback=True))
 # print(output)
 
-influxAddress = config['INFLUXDB']['Address']
-influxPort = float(config['INFLUXDB']['Port'])
-influxDatabase = config['INFLUXDB']['Database']
-influxUser = config['INFLUXDB'].get('Username', fallback='')
-influxPassword = config['INFLUXDB'].get('Password', fallback='')
+influxURL = config['INFLUXDB']['URL']
+influxTOKEN = config['INFLUXDB']['token']
+influxORG = config['INFLUXDB']['org']
+influxBucket = config['INFLUXDB']['bucket']
 
 Sources = json.loads(config['WEATHER'].get('Sources'))
 
-influx_client = InfluxDBClient(influxAddress, influxPort, influxUser, influxPassword, influxDatabase)
+influx_client = InfluxDBClient(url = influxURL, token = influxTOKEN,
+        org = influxORG)
+write_api = client.write_api(write_options=ASYNCHRONOUS)
 
 #return a list of payloads to send to influxdb
 def getSourceData(source):
@@ -37,29 +38,19 @@ def getSourceData(source):
 
     return sourceData
 
-def sendInfluxData(json_data):
+def sendInfluxData(data):
 
     if output:
-        #print(json_data)
-        print(type(json_data))
+        print(type(data))
 
     try:
-        influx_client.write_points(json_data)
-    except (InfluxDBClientError, ConnectionError, InfluxDBServerError) as e:
-        if hasattr(e, 'code') and e.code == 404:
-
-            print('Database {} Does Not Exist.  Attempting To Create'.format(influxDatabase))
-
-            influx_client.create_database(influxDatabase)
-            influx_client.write_points(json_data)
-
-            return
-
+        write_api.write(bucket = influxBucket, org = influxORG, record = data)
+    except Exception as e:
         print('ERROR: Failed To Write To InfluxDB')
         print(e)
 
     if output:
-        print('Written To Influx: {}'.format(json_data))
+        print('Written To Influx: {}'.format(data))
 
 
 def main():
