@@ -55,6 +55,7 @@ def formatData(data):
     if data['weather'][0]['main']: p = p.field('weather_main', str(data['weather'][0]['main']))
     if data['weather'][0]['description']: p = p.field('weather_description', str(data['weather'][0]['description']))
     if data['main']['temp']: p = p.field('main_temp', float(data['main']['temp']))
+    if data['main']['feels_like']: p = p.field('main_feels_like', float(data['main']['feels_like']))
     if data['main']['pressure']: p = p.field('main_pressure', float(data['main']['pressure']/10))
     if data['main']['humidity']: p = p.field('main_humidity', float(data['main']['humidity']))
     if data['main']['temp_min']: p = p.field('main_temp_min', float(data['main']['temp_min']))
