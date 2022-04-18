@@ -10,4 +10,4 @@ bucket =
 
 [WEATHER]
 #names of scripts for other weather sources (without file extension)
-Sources: ["file1","file2","file3"]
+Sources: ["openweathermap"]
