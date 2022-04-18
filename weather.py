@@ -27,7 +27,7 @@ Sources = json.loads(config['WEATHER'].get('Sources'))
 
 influx_client = InfluxDBClient(url = influxURL, token = influxTOKEN,
         org = influxORG)
-write_api = client.write_api(write_options=ASYNCHRONOUS)
+write_api = influx_client.write_api(write_options=ASYNCHRONOUS)
 
 #return a list of payloads to send to influxdb
 def getSourceData(source):
