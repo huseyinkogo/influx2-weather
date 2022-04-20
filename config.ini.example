@@ -1,5 +1,5 @@
 [GENERAL]
-Delay = 20
+Delay = 120
 Output = False
 
 [INFLUXDB]
